@@ -1,1 +1,126 @@
-
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Sri Panchamuki Coliving PG – Daily Menu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1c2033;--mute:#6b7288;--line:#e6e9f2;--acc:#5b5bf0;--acc2:#8a5cf6;--accs:#eeeeff;--nv:#d6336c;--sh:0 4px 20px rgba(28,32,51,.07)}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1220;--card:#181c30;--ink:#eef0fa;--mute:#98a0bb;--line:#272c47;--accs:#262a52;--sh:0 4px 20px rgba(0,0,0,.35)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.hero{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;padding:calc(28px + env(safe-area-inset-top,0px)) 18px 56px}
+.in{max-width:680px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.logo{font-size:13px;font-weight:600;opacity:.85;letter-spacing:.04em;text-transform:uppercase}
+.hero h1{margin:10px 0 4px;font-size:30px;line-height:1.15}.hero p{margin:0;opacity:.88;font-size:14px}
+.pill{display:inline-block;background:rgba(255,255,255,.2);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:600;margin-top:12px}
+.ob{background:#fff;color:var(--acc);border:0;border-radius:10px;padding:8px 14px;font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.main{max-width:680px;margin:-34px auto 0;padding:0 14px calc(48px + env(safe-area-inset-bottom,0px))}
+.note{background:#fff7e0;color:#7a5600;border-radius:12px;padding:11px 14px;margin-bottom:14px;font-size:14px}
+.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:var(--sh);border:1px solid var(--line)}
+.card.live{border:2px solid var(--acc)}
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ic{width:44px;height:44px;border-radius:12px;background:var(--accs);display:grid;place-items:center;font-size:22px;flex:none}
+.hd b{font-size:16px;display:block}.hd small{color:var(--mute);font-size:13px}
+.st{margin-left:auto;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.st.now{background:var(--acc);color:#fff}.st.up{background:var(--accs);color:var(--acc)}.st.dn{background:var(--line);color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{background:var(--bg);border:1px solid var(--line);padding:6px 12px;border-radius:99px;font-size:14px}
+.empty{color:var(--mute);font-size:14px;text-align:center;padding:14px 10px}
+.foot{color:var(--mute);font-size:12px;text-align:center;margin-top:18px}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:12px;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer}
+.btn.g{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}.btn:disabled{opacity:.6}
+label{display:block;font-size:12px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 6px}
+input{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+.sel{background:var(--acc);color:#fff;border:0;border-radius:99px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.sug{background:var(--card);color:var(--ink);border:1.5px dashed var(--line);border-radius:99px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.sug.on{background:var(--accs);border:1.5px solid var(--acc);color:var(--acc);font-weight:600}
+.add{display:flex;gap:8px;margin-top:10px}.add input{flex:1}.add .btn{padding:10px 16px}
+.bar{position:sticky;bottom:0;display:flex;gap:8px;padding:12px 0;background:linear-gradient(transparent,var(--bg) 30%)}.bar .btn{flex:1}
+.err{color:var(--nv);font-size:13px;margin:6px 0}
+</style></head><body>
+<div id="app"></div>
+<script>
+var M=[
+["breakfast","🍳","Breakfast","8:00 – 9:30 AM",8,9.5,["Dosa","Masala Dosa","Pongal","Upma","Idli","Poha"]],
+["lunch","🍛","Lunch","1:00 – 2:30 PM",13,14.5,["Rice","Sambar","Dal","Tomato Rice","Tamarind Rice","Rasam"]],
+["dinner","🍽️","Dinner","8:00 – 9:30 PM",20,21.5,["Rice","Chapathi","Dal","Vegetable Rice","Pulav","Chicken Biriyani","Egg Biriyani","Fried Rice","Potato Capsicum","Beetroot","Broad Beans (Avaraikkai)","Egg Curry"],[["Main",["Rice","Chapathi","Dal","Vegetable Rice","Pulav","Chicken Biriyani","Egg Biriyani","Fried Rice"]],["Side dish",["Potato Capsicum","Beetroot","Broad Beans (Avaraikkai)"]],["Curry",["Egg Curry"]]]]];
+var PG="Sri Panchamuki Coliving PG";
+var S={note:"",meals:{}},view="home",pw="",msg="",draft=null,loaded=false,failed=false;
+try{pw=sessionStorage.getItem("pgpw")||""}catch(e){}
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function post(b){return fetch("/api/menu",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)})}
+function load(){fetch("/api/menu",{cache:"no-store"}).then(function(r){return r.json()}).then(function(d){S=d;S.meals=S.meals||{};loaded=true;failed=false;if(view=="home")render()}).catch(function(){failed=true;if(view=="home")render()})}
+function status(m){var n=new Date(),h=n.getHours()+n.getMinutes()/60;return h<m[4]?["up","Upcoming"]:h<=m[5]?["now","Serving now"]:["dn","Done"]}
+function hero(a,btn){
+ var h=el("div","hero"),i=el("div","in"),t=el("div","top");
+ t.appendChild(el("div","logo","🍴 Daily Menu"));if(btn)t.appendChild(btn);
+ i.appendChild(t);i.appendChild(el("h1","",PG));
+ i.appendChild(el("p","","Today's meals at a glance — decide before you head back."));
+ i.appendChild(el("span","pill",new Date().toLocaleDateString([], {weekday:"long",day:"numeric",month:"short"})));
+ h.appendChild(i);a.appendChild(h)}
+function render(){
+ var a=document.getElementById("app");a.innerHTML="";
+ if(view=="login")return login(a);if(view=="edit")return editor(a);
+ var b=el("button","ob",pw?"✏️ Edit menu":"Owner login");
+ b.onclick=function(){msg="";if(pw)startEdit();else{view="login";render()}};
+ hero(a,b);var m=el("div","main");a.appendChild(m);
+ if(failed&&!loaded)return m.appendChild(el("div","card empty","Couldn't load the menu. Check your internet and refresh."));
+ if(!loaded)return m.appendChild(el("div","card empty","Loading menu…"));
+ if(S.note)m.appendChild(el("div","note","📢 "+S.note));
+ M.forEach(function(x){
+  var v=S.meals[x[0]]||{},its=v.items||[],st=status(x),c=el("div","card"+(st[0]=="now"&&its.length?" live":"")),h=el("div","hd");
+  h.appendChild(el("div","ic",x[1]));var t=el("div");t.appendChild(el("b","",x[2]));t.appendChild(el("small","",v.time||x[3]));h.appendChild(t);
+  if(its.length)h.appendChild(el("span","st "+st[0],st[1]));c.appendChild(h);
+  if(!its.length)c.appendChild(el("div","empty","Not posted yet"));
+  else{var ch=el("div","chips");its.forEach(function(i){ch.appendChild(el("span","chip",i))});c.appendChild(ch)}
+  m.appendChild(c)});
+ if(S.updated)m.appendChild(el("div","foot","Last updated "+new Date(S.updated).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})));
+}
+function login(a){
+ var x=el("button","ob","✕ Close");x.onclick=function(){view="home";render()};hero(a,x);
+ var m=el("div","main"),c=el("div","card");a.appendChild(m);m.appendChild(c);
+ c.appendChild(el("b","","Owner login"));c.appendChild(el("label","","Password"));
+ var p=el("input");p.type="password";p.autocomplete="current-password";c.appendChild(p);
+ if(msg)c.appendChild(el("div","err",msg));
+ var b=el("button","btn","Login");b.style.marginTop="14px";b.style.width="100%";
+ function go(){b.disabled=true;b.textContent="Checking…";
+  post({action:"check",password:p.value}).then(function(r){
+   if(r.ok){pw=p.value;try{sessionStorage.setItem("pgpw",pw)}catch(e){}startEdit()}
+   else{msg=r.status==401?"Wrong password.":"Owner password isn't set up yet.";render()}
+  }).catch(function(){msg="Network error. Try again.";render()})}
+ b.onclick=go;p.onkeydown=function(e){if(e.key=="Enter")go()};c.appendChild(b);p.focus()}
+function startEdit(){
+ draft={note:S.note||"",m:{}};
+ M.forEach(function(x){var v=S.meals[x[0]]||{};draft.m[x[0]]={time:v.time||x[3],items:(v.items||[]).slice()}});
+ view="edit";msg="";render()}
+function editor(a){
+ var cl=el("button","ob","✕ Close");cl.onclick=function(){view="home";render()};hero(a,cl);
+ var m=el("div","main");a.appendChild(m);
+ var g=el("div","card");g.appendChild(el("label","","Announcement (optional)"));
+ var n=el("input");n.value=draft.note;n.placeholder="e.g. No dinner on Sunday";n.oninput=function(){draft.note=n.value};g.appendChild(n);m.appendChild(g);
+ M.forEach(function(x){
+  var D=draft.m[x[0]],c=el("div","card"),h=el("div","hd");
+  h.appendChild(el("div","ic",x[1]));var t=el("div");t.appendChild(el("b","",x[2]));t.appendChild(el("small","",""));h.appendChild(t);c.appendChild(h);
+  c.appendChild(el("label","","Timing"));var ti=el("input");ti.value=D.time;ti.oninput=function(){D.time=ti.value};c.appendChild(ti);
+  var sl=el("div"),sg=el("div");
+  function draw(){
+   t.lastChild.textContent=D.items.length+" selected";sl.innerHTML="";sg.innerHTML="";
+   sl.appendChild(el("label","","Selected"));var w=el("div","chips");
+   if(!D.items.length)w.appendChild(el("span","empty","Nothing selected — tap dishes below"));
+   D.items.forEach(function(i){var b=el("button","sel",i+"  ✕");b.onclick=function(){D.items.splice(D.items.indexOf(i),1);draw()};w.appendChild(b)});sl.appendChild(w);
+   var gs=(x[7]||[["Tap to add dishes",x[6]]]).slice(),ex=D.items.filter(function(i){return x[6].indexOf(i)<0});
+   if(ex.length)gs.push(["Your own dishes",ex]);
+   gs.forEach(function(g){sg.appendChild(el("label","",g[0]));var q=el("div","chips");
+    g[1].forEach(function(i){var on=D.items.indexOf(i)>=0,b=el("button","sug"+(on?" on":""),(on?"✓ ":"+ ")+i);
+     b.onclick=function(){if(on)D.items.splice(D.items.indexOf(i),1);else D.items.push(i);draw()};q.appendChild(b)});sg.appendChild(q)})}
+  draw();c.appendChild(sl);c.appendChild(sg);
+  var ad=el("div","add"),ci=el("input");ci.placeholder="Add your own dish…";var ab=el("button","btn g","Add");
+  function go(){var v=ci.value.trim();if(v&&D.items.indexOf(v)<0)D.items.push(v);ci.value="";draw()}
+  ab.onclick=go;ci.onkeydown=function(e){if(e.key=="Enter")go()};ad.appendChild(ci);ad.appendChild(ab);c.appendChild(ad);m.appendChild(c)});
+ if(msg)m.appendChild(el("div","err",msg));
+ var bar=el("div","bar"),sv=el("button","btn","Save menu");
+ sv.onclick=function(){sv.disabled=true;sv.textContent="Saving…";
+  post({password:pw,note:draft.note,meals:draft.m}).then(function(r){
+   if(r.status==401){pw="";try{sessionStorage.removeItem("pgpw")}catch(e){}msg="";view="login";render();return}
+   if(!r.ok)throw 0;return r.json().then(function(d){S=d;view="home";render()})
+  }).catch(function(){msg="Couldn't save. Please try again.";render()})};
+ bar.appendChild(sv);m.appendChild(bar)}
+render();load();setInterval(load,300000);
+</script></body></html>
